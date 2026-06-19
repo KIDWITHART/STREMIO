@@ -157,8 +157,13 @@ function buildManifest(configParam) {
       ? 'Your personalized Stremio playlist addon containing custom Assamese YouTube songs.'
       : 'Stream popular Assamese song playlists from YouTube natively on Stremio.',
     resources: ['catalog', 'meta', 'stream'],
-    types: ['channel'],
+    types: ['series', 'channel'],
     catalogs: [
+      {
+        type: 'series',
+        id: 'assamese_songs',
+        name: 'Assamese Playlists'
+      },
       {
         type: 'channel',
         id: 'assamese_songs',
@@ -185,7 +190,7 @@ app.get('/:config/manifest.json', handleManifest);
 const handleCatalog = async (req, res) => {
   const { config, type, id } = req.params;
 
-  if (type !== 'channel' || id !== 'assamese_songs') {
+  if ((type !== 'channel' && type !== 'series') || id !== 'assamese_songs') {
     return res.json({ metas: [] });
   }
 
@@ -205,7 +210,7 @@ const handleCatalog = async (req, res) => {
     .filter(p => p !== null)
     .map(p => ({
       id: `yt_as:playlist:${p.id}`,
-      type: 'channel',
+      type: type, // Matches requested type (channel or series)
       name: p.title,
       poster: p.thumbnail,
       background: p.thumbnail,
@@ -232,17 +237,25 @@ const handleMeta = async (req, res) => {
     
     const meta = {
       id: id,
-      type: 'channel',
+      type: type, // Matches requested type (channel or series)
       name: playlist.title,
       poster: playlist.thumbnail,
       background: playlist.thumbnail,
       description: `YouTube Playlist containing ${playlist.items.length} songs.`,
-      videos: playlist.items.map((item, index) => ({
-        id: `yt_as:video:${item.id}`,
-        title: item.title,
-        thumbnail: item.thumbnail,
-        released: new Date(Date.now() - index * 60000).toISOString()
-      }))
+      videos: playlist.items.map((item, index) => {
+        const video = {
+          id: `yt_as:video:${item.id}`,
+          title: item.title,
+          thumbnail: item.thumbnail,
+          released: new Date(Date.now() - index * 60000).toISOString()
+        };
+        // Series videos require season and episode number to display sequentially on TV/Mobile
+        if (type === 'series') {
+          video.season = 1;
+          video.episode = index + 1;
+        }
+        return video;
+      })
     };
 
     res.json({ meta });
