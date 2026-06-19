@@ -115,7 +115,7 @@ async function getPlaylistData(playlistId) {
 function parseConfig(configParam) {
   if (!configParam) {
     return {
-      name: 'Assamese YouTube Songs',
+      name: 'YouTube Playlists',
       playlists: DEFAULT_PLAYLISTS.map(p => p.id)
     };
   }
@@ -128,7 +128,7 @@ function parseConfig(configParam) {
     
     if (parsed && Array.isArray(parsed.playlists)) {
       return {
-        name: parsed.name || 'Assamese YouTube Songs',
+        name: parsed.name || 'YouTube Playlists',
         playlists: parsed.playlists
       };
     }
@@ -139,38 +139,44 @@ function parseConfig(configParam) {
   // Fallback to comma-separated playlist IDs
   const playlists = configParam.split(',').map(id => id.trim()).filter(id => id.length > 0);
   return {
-    name: 'Assamese YouTube Songs',
+    name: 'YouTube Playlists',
     playlists: playlists
   };
 }
 
 // Build Stremio Manifest
-function buildManifest(configParam) {
+function buildManifest(configParam, req) {
   const config = parseConfig(configParam);
   const isCustom = !!configParam;
+  
+  // Construct absolute logo URL dynamically based on the request headers
+  const protocol = req && (req.secure || req.headers['x-forwarded-proto'] === 'https') ? 'https' : 'http';
+  const host = req && req.headers.host ? req.headers.host : '127.0.0.1:7000';
+  const logoUrl = `${protocol}://${host}/logo.png`;
   
   return {
     id: isCustom ? `org.assamesesongs.addon.${Buffer.from(configParam).toString('hex').substring(0, 16)}` : 'org.assamesesongs.addon',
     version: '1.0.0',
     name: config.name,
     description: isCustom 
-      ? 'Your personalized Stremio playlist addon containing custom Assamese YouTube songs.'
-      : 'Stream popular Assamese song playlists from YouTube natively on Stremio.',
+      ? 'Your personalized Stremio playlist addon containing custom YouTube playlists.'
+      : 'Stream popular song playlists from YouTube natively on Stremio.',
     resources: ['catalog', 'meta', 'stream'],
     types: ['series', 'channel'],
     catalogs: [
       {
         type: 'series',
         id: 'assamese_songs',
-        name: 'Assamese Playlists'
+        name: 'YouTube Playlists'
       },
       {
         type: 'channel',
         id: 'assamese_songs',
-        name: 'Assamese Playlists'
+        name: 'YouTube Playlists'
       }
     ],
-    idPrefixes: ['yt_as:']
+    idPrefixes: ['yt_as:'],
+    logo: logoUrl
   };
 }
 
@@ -181,7 +187,7 @@ function buildManifest(configParam) {
 // Manifest Endpoint
 const handleManifest = (req, res) => {
   const config = req.params.config;
-  res.json(buildManifest(config));
+  res.json(buildManifest(config, req));
 };
 app.get('/manifest.json', handleManifest);
 app.get('/:config/manifest.json', handleManifest);

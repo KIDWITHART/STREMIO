@@ -272,7 +272,7 @@ function updateUrls() {
     origin = origin.replace('localhost', '127.0.0.1');
   }
   
-  const addonName = addonNameInput.value.trim() || 'Assamese YouTube Songs';
+  const addonName = addonNameInput.value.trim() || 'YouTube Playlists';
   const playlistIds = selectedPlaylists.map(p => p.id);
   
   // Encode configuration as base64url-safe object
@@ -286,7 +286,7 @@ function updateUrls() {
     .replace(/=+$/, '');
   
   let manifestUrl;
-  if (playlistIds.length === 0 && addonName === 'Assamese YouTube Songs') {
+  if (playlistIds.length === 0 && addonName === 'YouTube Playlists') {
     manifestUrl = `${origin}/manifest.json`;
   } else {
     manifestUrl = `${origin}/${configStr}/manifest.json`;
@@ -301,6 +301,7 @@ function updateUrls() {
   stremioInstallBtn.setAttribute('href', stremioProtocolUrl);
 }
 
+// Copy Manifest URL to clipboard
 // Copy Manifest URL to clipboard
 function handleCopyUrl() {
   const url = installUrlInput.value;
