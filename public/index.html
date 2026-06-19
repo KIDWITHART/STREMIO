@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assamese Songs Stremio Addon</title>
+  <meta name="description" content="Configure and install the YouTube Assamese Songs addon for Stremio. Build custom playlists of your favorite Assamese melodies.">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Ambient background glow elements -->
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="logo-area">
+        <div class="logo-icon">
+          <i class="fa-solid fa-music"></i>
+        </div>
+        <div>
+          <h1>Assamese Songs</h1>
+          <span class="badge">YouTube Stremio Addon</span>
+        </div>
+      </div>
+      <div class="status-indicator">
+        <span class="status-dot animate-pulse"></span>
+        <span class="status-text">Server Online</span>
+      </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="grid">
+      <!-- Left Column: Addon Configuration -->
+      <section class="card glass config-section">
+        <div class="section-header">
+          <div class="section-icon"><i class="fa-solid fa-sliders"></i></div>
+          <h2>Configure Addon</h2>
+        </div>
+        <p class="section-desc">Select which Assamese song playlists you want to include in your Stremio library. You can choose from our curated list or add your own favorite YouTube playlists!</p>
+
+        <!-- Addon Name Configuration -->
+        <div class="config-group">
+          <h3>Addon Display Name</h3>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-pen-to-square input-icon"></i>
+            <input type="text" id="addon-name" value="Assamese YouTube Songs" placeholder="Enter custom addon name..." />
+          </div>
+        </div>
+
+        <!-- Curated Playlists -->
+        <div class="config-group">
+          <h3>Curated Collections</h3>
+          <div class="curated-list" id="curated-list">
+            <!-- Curated items will be populated by JS -->
+            <div class="skeleton-loader" style="height: 60px;"></div>
+            <div class="skeleton-loader" style="height: 60px;"></div>
+            <div class="skeleton-loader" style="height: 60px;"></div>
+          </div>
+        </div>
+
+        <!-- Add Custom Playlist -->
+        <div class="config-group">
+          <h3>Add Custom YouTube Playlist</h3>
+          <div class="input-group">
+            <div class="input-wrapper">
+              <i class="fa-brands fa-youtube input-icon"></i>
+              <input type="text" id="custom-playlist-url" placeholder="Paste YouTube Playlist URL or ID..." />
+            </div>
+            <button id="add-playlist-btn" class="btn btn-secondary">
+              <i class="fa-solid fa-plus"></i> Add
+            </button>
+          </div>
+          <div class="error-msg" id="validation-error">
+            <i class="fa-solid fa-circle-exclamation"></i> <span id="error-text"></span>
+          </div>
+          <div class="info-msg" id="validation-loading">
+            <i class="fa-solid fa-circle-notch fa-spin"></i> Validating playlist with YouTube...
+          </div>
+        </div>
+
+        <!-- Selected / Active Playlists list -->
+        <div class="config-group">
+          <h3>Selected Playlists <span class="counter" id="selected-count">0</span></h3>
+          <div class="selected-playlists" id="selected-playlists">
+            <!-- Selected items list -->
+            <p class="empty-list-msg">No playlists selected. Choose curated playlists or add a custom one to begin.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Installation & Live Preview -->
+      <div class="action-column">
+        <!-- Installation Widget -->
+        <section class="card glass install-card highlight-border">
+          <div class="section-header">
+            <div class="section-icon"><i class="fa-solid fa-download"></i></div>
+            <h2>Install Addon</h2>
+          </div>
+          
+          <div class="install-url-box">
+            <label for="install-url">Your Custom Manifest URL</label>
+            <div class="url-input-container">
+              <input type="text" id="install-url" readonly value="" />
+              <button id="copy-url-btn" class="btn btn-icon" title="Copy to clipboard">
+                <i class="fa-regular fa-copy"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="install-actions">
+            <a href="#" id="stremio-install-btn" class="btn btn-primary btn-full">
+              <i class="fa-solid fa-circle-play"></i> Install in Stremio
+            </a>
+          </div>
+          
+          <div class="instructions">
+            <h4>How to Install:</h4>
+            <ol>
+              <li>Click <strong>Install in Stremio</strong> to open Stremio and install automatically.</li>
+              <li>Or, click the copy icon, open Stremio, navigate to <strong>Add-ons</strong>, paste the link into the search box, and click Install.</li>
+            </ol>
+            <div class="note-box" style="margin-top: 15px; background: rgba(0, 242, 254, 0.05); border: 1px dashed rgba(0, 242, 254, 0.2); padding: 12px; border-radius: 8px; font-size: 11px; line-height: 1.5; color: var(--text-secondary);">
+              <i class="fa-solid fa-circle-info" style="color: var(--accent-cyan); margin-right: 5px;"></i>
+              <strong>Browser/Web App Note:</strong> Stremio Web App (web.stremio.com) blocks local HTTP connections due to browser security. For local testing, copy the link and install it directly in the <strong>Stremio Desktop App</strong>.
+            </div>
+          </div>
+        </section>
+
+        <!-- Preview Widget -->
+        <section class="card glass preview-card">
+          <div class="section-header">
+            <div class="section-icon"><i class="fa-solid fa-eye"></i></div>
+            <h2>Playlist Preview</h2>
+          </div>
+          
+          <div id="preview-container" class="preview-container">
+            <!-- Dynamic playlist details will show here -->
+            <div class="preview-empty">
+              <i class="fa-solid fa-music preview-empty-icon"></i>
+              <p>Select or add a playlist to preview the songs inside it.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <p>Made with <i class="fa-solid fa-heart" style="color: var(--accent);"></i> for Stremio & Assamese Music lovers.</p>
+      <p class="tech-stack">Powered by Node.js &bull; @distube/ytpl &bull; Express &bull; Stremio Addon Protocol</p>
+    </footer>
+  </div>
+
+  <!-- Custom JS -->
+  <script src="app.js"></script>
+</body>
+</html>
